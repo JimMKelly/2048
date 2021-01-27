@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="style.css">
     <title>2048</title>
 </head>
 <body onload="setup()">
     
-    <div>
-        <p id="score">Score: 0</p>
+    <div id="container">
+        <div id="display">
+            <span id="score">Score: 0</span>
+            <span id="highScore">High Score: 0</span>
+            <span id="gameOver"></span>
+        </div>
         <canvas id="myCanvas"></canvas>
     </div>
 
