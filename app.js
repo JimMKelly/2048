@@ -7,7 +7,7 @@ var startY;
 var endX;
 var endY;
 
-var threshold = 100; //this sets the minimum swipe distance
+var threshold = 80; //this sets the minimum swipe distance
 
 window.addEventListener('touchstart', function(event){
     //console.log(event);
