@@ -2,44 +2,61 @@ const scoreEl = document.getElementById("score");
 let grid;
 let score = 0;
 
+var startX;
+var startY;
+var endX;
+var endY;
+
+var threshold = 100; //this sets the minimum swipe distance
+
+window.addEventListener('touchstart', function(event){
+    //console.log(event);
+    startX = event.touches[0].clientX;
+    startY = event.touches[0].clientY;      
+});
+    
+window.addEventListener('touchend', function(event){
+    //console.log(event);
+    const prevGrid = copyGrid(grid);
+
+    endX = event.changedTouches[0].clientX;
+    endY = event.changedTouches[0].clientY;
+
+    handleTouch(startX, endX, startY, endY);
+
+    if(compare(prevGrid,grid)) {
+        addNumber();
+    }
+
+    update();
+    if(isGameOver()){
+        console.log("Game Over!");
+    }
+    if(isGameWon()){
+        console.log("Game Won");
+    }
+});
+
 document.addEventListener('keydown', event => {
-    //console.log(event.keyCode);
+    //console.log(event.code);
     const prevGrid = copyGrid(grid);
     
-    switch(event.keyCode){
+    switch(event.code){
         // Up Arrow
-        case 38:
-            grid = flipGrid(grid);
-            for(let i=0; i< 4; i++){
-                grid[i] = operate(grid[i]);
-            } 
-            grid = flipGrid(grid);
+        case "ArrowUp":
+            handleUp();
             break;
         // Down Arrow
-        case 40:
-            for(let i=0; i< 4; i++){
-                grid[i] = operate(grid[i]);
-            }        
+        case "ArrowDown":
+            handleDown();        
             break;
         // Left Arrow
-        case 37:
-            grid = rotateGrid(grid);
-            grid = flipGrid(grid);
-            for(let i=0; i< 4; i++){
-                grid[i] = operate(grid[i]);
-            } 
-            grid = flipGrid(grid);
-            grid = rotateGrid(grid);
+        case "ArrowLeft":
+            handleLeft();
             break;
         // Right Arrow
-        case 39:
-            grid = rotateGrid(grid);
-            for(let i=0; i< 4; i++){
-                grid[i] = operate(grid[i]);
-            } 
-            grid = rotateGrid(grid);
-            grid = rotateGrid(grid);
-            grid = rotateGrid(grid);
+        case "ArrowRight":
+            handleRight();
             break;
     }
 
@@ -55,6 +72,67 @@ document.addEventListener('keydown', event => {
         console.log("Game Won");
     }
 });
+
+//Function to handle swipes
+function handleTouch(x1, x2, y1, y2){
+    //calculate the distance on x-axis and o y-axis. Check wheter had the great moving ratio.
+    var xDist = Math.abs(x2 - x1);
+    var yDist = Math.abs(y2 - y1);
+    //console.log("xDist: " + xDist); console.log("yDist: " + yDist);
+
+    if((xDist > threshold) || (yDist > threshold)) {
+        if((xDist > yDist) && (x2 - x1 < 0)) { 
+            console.log("Swiped left!"); 
+            handleLeft();
+        }
+        if((xDist > yDist) && (x2 - x1 > 0)) { 
+            console.log("Swiped right!"); 
+            handleRight();
+        }
+        if((xDist < yDist) && (y2 - y1 < 0)) { 
+            console.log("Swiped up!"); 
+            handleUp();
+        }
+        if((xDist < yDist) && (y2 - y1 > 0)) { 
+            console.log("Swiped down!"); 
+            handleDown();
+        }
+    }
+}
+
+function handleUp() {
+    grid = flipGrid(grid);
+    for(let i=0; i< 4; i++){
+        grid[i] = operate(grid[i]);
+    } 
+    grid = flipGrid(grid);
+}
+
+function handleDown() {
+    for(let i=0; i< 4; i++){
+        grid[i] = operate(grid[i]);
+    }   
+}
+
+function handleLeft() {
+    grid = rotateGrid(grid);
+    grid = flipGrid(grid);
+    for(let i=0; i< 4; i++){
+        grid[i] = operate(grid[i]);
+    } 
+    grid = flipGrid(grid);
+    grid = rotateGrid(grid);
+}
+
+function handleRight() {
+    grid = rotateGrid(grid);
+    for(let i=0; i< 4; i++){
+        grid[i] = operate(grid[i]);
+    } 
+    grid = rotateGrid(grid);
+    grid = rotateGrid(grid);
+    grid = rotateGrid(grid);
+}
 
 function setup(){
     grid = blankGrid();
