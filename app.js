@@ -1,13 +1,20 @@
 const scoreEl = document.getElementById("score");
+const highScoreEl = document.getElementById("highScore");
+const gameOverEl = document.getElementById("gameOver");
 let grid;
 let score = 0;
+var highScore = 0;
+
+if(localStorage.getItem("highScore")){
+    highScore = localStorage.getItem("highScore");
+}
 
 var startX;
 var startY;
 var endX;
 var endY;
 
-var threshold = 80; //this sets the minimum swipe distance
+var threshold = 80; //this sets the minimum swipe distance, to avoid noise and to filter actual swipes from just moving fingers
 
 window.addEventListener('touchstart', function(event){
     //console.log(event);
@@ -29,12 +36,7 @@ window.addEventListener('touchend', function(event){
     }
 
     update();
-    if(isGameOver()){
-        console.log("Game Over!");
-    }
-    if(isGameWon()){
-        console.log("Game Won");
-    }
+    endOfGame()
 });
 
 document.addEventListener('keydown', event => {
@@ -65,13 +67,19 @@ document.addEventListener('keydown', event => {
     }
 
     update();
+    endOfGame()
+});
+
+function endOfGame(){
     if(isGameOver()){
         console.log("Game Over!");
+        gameOverEl.innerHTML = "Game Over!";
     }
     if(isGameWon()){
         console.log("Game Won");
+        gameOverEl.innerHTML = "Congrats!";
     }
-});
+}
 
 //Function to handle swipes
 function handleTouch(x1, x2, y1, y2){
@@ -146,7 +154,19 @@ function setup(){
 
 function update(){
     drawGrid();
+
+    if(highScore !== null){
+        if (score > highScore) {
+            localStorage.setItem("highScore", score);    
+            highScore = score;  
+        }
+    }
+    else{
+        localStorage.setItem("highScore", score);
+    }
+
     scoreEl.innerHTML="Score: " + score;
+    highScoreEl.innerHTML="High Score: " + highScore;
 }
 
 function drawGrid(){
